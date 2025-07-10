@@ -1,0 +1,57 @@
+table 'baker_yelp_dbt_prod items'
+	lineageTag: 8d1778cf-28ac-4ba5-9e2e-125ec286ac0e
+
+	column production_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 723afc1b-099d-45b0-ab35-86d1b07998d0
+		summarizeBy: none
+		sourceColumn: production_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column flour
+		dataType: double
+		lineageTag: 96770910-4f85-41eb-bd23-123185b3e667
+		summarizeBy: sum
+		sourceColumn: flour
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column flour_lagged
+		dataType: double
+		lineageTag: c995c2e4-464e-4b1f-9404-eb481d370451
+		summarizeBy: sum
+		sourceColumn: flour_lagged
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column lag_dif
+		dataType: double
+		lineageTag: ebe5239a-f8df-4f2b-acd7-d629c4916912
+		summarizeBy: sum
+		sourceColumn: lag_dif
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'baker_yelp_dbt_prod items' = m
+		mode: import
+		source =
+				let
+				    Quelle = PostgreSQL.Database("localhost:5432", "postgres"),
+				    baker_yelp_dbt_prod_items = Quelle{[Schema="baker_yelp_dbt_prod",Item="items"]}[Data]
+				in
+				    baker_yelp_dbt_prod_items
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

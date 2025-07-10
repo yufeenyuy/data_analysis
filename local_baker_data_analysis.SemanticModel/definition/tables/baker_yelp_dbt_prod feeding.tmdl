@@ -1,0 +1,37 @@
+table 'baker_yelp_dbt_prod feeding'
+	lineageTag: 3ba1325c-9411-4eb0-bc66-834d31c9285e
+
+	column production_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 7ff8104f-08fd-46d0-876b-3d4c315ac082
+		summarizeBy: none
+		sourceColumn: production_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column feeding
+		dataType: double
+		lineageTag: 9afe0ca4-d74a-47dd-8f6c-b908ed2a740f
+		summarizeBy: sum
+		sourceColumn: feeding
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'baker_yelp_dbt_prod feeding' = m
+		mode: import
+		source =
+				let
+				    Quelle = PostgreSQL.Database("localhost:5432", "postgres"),
+				    baker_yelp_dbt_prod_feeding = Quelle{[Schema="baker_yelp_dbt_prod",Item="feeding"]}[Data]
+				in
+				    baker_yelp_dbt_prod_feeding
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
