@@ -1,18 +1,63 @@
-# Daten Analyse
+<link rel="stylesheet" href="background.css">
 
-Bei der Auswertung von Daten, insbesondere im Unternehmen, spielen Kennzahlen eine wichtige Rolle, denn sie werden für die Steuerung des operativen Geschäfts eingesetzt, und die diennen oft als Grundlage für daten getriebenen strategischen Entscheidungen. Daten Visualisierung ist eine gute Werkzeug, um Daten in unterschiedlicher Art un Weise einfach und geschickt darzustellen. Nur so können große Datenmenge von Stakeholdern, vor allen das Management, schnell Wahrgenommen, verstanden und interpretiert werden. In den vorherigen Komponenten dieser Extract-Load-Transform (ELT) Datenstrecke sind Daten aus Quellen schon extrahieriert, beladen und geziehlt transformiert, sodass sie für die Analyse einsatzbereit sind. In dieser Portfolio-Abschnitt werden die Daten basierend auf Kennzahlen ausgewertet und visuell dargestellt. Danach erfolgt eine Interpretation der Kennzahlen, um Schlüssfolgerungen zu ziehen.  
+<h1>
+<p style="font-family: Arial, sans-serif; text-align: center; font-size: 2rem"><b>Daten Analyse</b></p>
+</h1>
 
-### Yelp Daten Analyse
+Bei der Auswertung von Daten, insbesondere im Unternehmen, spielen Kennzahlen eine wichtige Rolle, denn sie werden für die Steuerung des operativen Geschäfts eingesetzt, und die diennen oft als Grundlage für daten getriebenen strategischen Entscheidungen. Daten Visualisierung ist eine gute Werkzeug, um Daten in unterschiedlicher Art un Weise einfach und geschickt darzustellen. Nur so können große Datenmenge von Stakeholdern, vor allen das Management, schnell Wahrgenommen, verstanden und interpretiert werden. In den vorherigen Komponenten dieser Extract-Load-Transform (ELT) Datenstrecke sind Daten aus Quellen schon extrahieriert, beladen und geziehlt transformiert, sodass sie für die Analyse einsatzbereit sind. In dieser Portfolio-Abschnitt werden die Daten basierend auf Kennzahlen ausgewertet und visuell dargestellt. Danach erfolgt eine Interpretation der Kennzahlen, um Schlüssfolgerungen zu ziehen. 
+
+## Yelp Daten Analyse
 
 Bei den Yelp Daten handelt es sich um Restaurants und ggf. ihre Bewertungen. Kunden sind nicht verpflichtet ein Restaurant nach Besuch abzugeben. Aus diesem Grund kann es durchaus kommen, dass ein Restaurant keine Bewertung bekommt. Für die Analyse werden folgende Kennzahlen in Power BI berechnet und visualisiert. Power BI ist eine gute BI Tool für tiefe Analyse und für den Aufbau interaktive Reports bzw. Dashboards.
 
 **Berechnete Kennzahlen**
 
-+ Anzahl der Bewertungen: Eine Bewertung ist eine Text, die ein Kunde beim Besuch oder nach Besuch eines Restaurants abgibt. Diese Text spiegelt die Meinung des Kundens Angesicht seine Erfahrung im Bezug auf dem Produkt oder Service des Restaurants wieder. Mehr Bewertungen zeigen eine höhe Engagement von den Kunden Seite an.
-+ Durchschnittliche Stimmung: Diese wirde an Hand der Kunden Bewertungen abgebildet. Ein Wert von 0 heißt *schlechte Stimmung* und 1 dagegen heißt *sehr gute Stimmung*. Diese Kennzahl kann bei der Bestimmung von Schwach Stellen und Potenzialle unterstützen, denn die spiegelt die Meinung den Kunden gegenüber das Geschäft. Ob ein Kunde ein Restaurant weiter empfehlen kann, hängt stark von seine Stimmung ab. Deswegen ist diese Kennzahl für Geschäfte ebenfalls wichtig.
++ Anzahl der Bewertungen: Eine Bewertung ist eine Text, die ein Kunde beim Besuch oder nach Besuch eines Restaurants abgibt. Diese Text spiegelt die Meinung des Kundens Angesicht seine Erfahrung im Bezug auf dem Produkt oder Service des Restaurants wieder. Mehr Bewertungen zeigen eine höhe Engagement von den Kunden Seite an. 
+
+```
+Berechnung in Power BI:
+anzahl_bewertungen = IF(
+                        ISBLANK(COUNT('business_reviews_t1'[review_id])),
+                        0,
+                        COUNT('business_reviews_t1'[review_id])
+                        )
+```
+
++ Durchschnittliche Stimmung: Diese wirde an Hand der Kunden Bewertungen abgebildet. Ein Wert von 0 heißt *schlechte Stimmung* und 1 dagegen heißt *sehr gute Stimmung*. Diese Kennzahl kann bei der Bestimmung von Schwach Stellen und Potenzialle unterstützen, denn die spiegelt die Meinung den Kunden gegenüber das Geschäft. Ob ein Kunde ein Restaurant weiter empfehlen kann, hängt stark von seine Stimmung ab. Deswegen ist diese Kennzahl für Geschäfte ebenfalls wichtig. Power BI bietet eine Funktionalität Text Felder auszuwerten. Damit kann die Stimmung, Schlüssel wörter sowie die Sprache einer Text extrahieriet werden. Zuerst wurde die Stimmung einzelner Bewertung berechnet.
+
+```
+Berechnung in Power BI:
+durchschnittliche_stimmung = IF(
+                                ISBLANK(AVERAGE('business_reviews_t1'[Score sentiment])),
+                                0,
+                                AVERAGE('business_reviews_t1'[Score sentiment])
+                                )
+```
+
 + Anzahl der Geschäftskategorien: Für den betrachteten Datensatz ist diese die Anzahl der eindeutigen Geschäftkategorien, die in den Geschäften vertreten sind. Allderdings kann ein Restaurants mehrere Kategorien vertreten. Für Geschäfte ist es wichtig zu wissen, welche Kategorien von Marktkonkurente vertreten werden. Diese kann einen Einfluss auf die Preisgestaltung haben.
+
+```
+Berechnung in Power BI:
+anzahl_der_geschäftskategorien = DISTINCTCOUNT('businesses_t1'[title]) 
+```
+
 + Durchschnittliche Geschäftsbewertug: Yelp bestimmt die Gesamt Bewertung eines Geschäfts. Ein Wert von 1 entsprich *schlecht* und 5 entspricht *sehr gut*. Dadurch können Geschäfte wissen, wie sie von Kunden Wahrgenommen werden. Die Kundenzufriedenheit kann mit dieser Kennzahl ebenfalls gemessen werden.
+
+```
+Berechnung in Power BI:
+durchschnittliche_geschaeftsbewertug = AVERAGE('businesses_t2'[rating]) 
+```
+
 + Bewertete Geschäfte: Basierend auf die auszuwertenden Daten ist diese den prozentuallen Anteil an bewerteten Geschäfte. Je mehr Bewertungen ein Geschäft bekommt, desto genauer kann ein Geschäft das Stimmungsbild seine Kunden ableiten. kunden können auch von den Bewertungen anderen Kunden profitieren. Dadurch können sie sich zuerst Informieren bevor sie sich für ein oder anderes Geschäft oder Restaurant entscheiden.
+
+```
+Berechnung in Power BI:
+bewertete_geschaefte = DIVIDE(
+                            DISTINCTCOUNT('business_reviews_t1_1'[business_id]),
+                            COUNTA('businesses_t2'[business_id])
+                            )
+```
+
 + WortWolke: Zeigt die Worten, die in den Bewertungen häufig verwerdet worden.
 
 Das nächste Bild zeigt eine visuelle Darstellung von den berechneten Kennzahlen, die oben beschrieben worden sind.
